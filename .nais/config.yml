@@ -1,0 +1,77 @@
+---
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: nav-dekoratoren-auth
+  namespace: navno
+  labels:
+    team: navno
+spec:
+  image: {{image}}
+  port: 3004
+  liveness:
+    path: /internal/alive
+    initialDelay: 5
+  readiness:
+    path: /internal/ready
+    initialDelay: 5
+  prometheus:
+    enabled: true
+    path: /internal/metrics
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: nodejs
+  ingresses:
+  {{#each ingresses as |ingress|}}
+    - {{ingress}}
+  {{/each}}
+  env:
+    - name: PDL_ORIGIN
+      value: https://{{pdlHost}}
+    - name: PDL_TOKEN_TARGET
+      value: {{pdlTokenTarget}}
+  {{#if userKeySecret}}
+  # USER_KEY_SECRET, which the user keys in /identity are made with. The app has no /identity without it.
+  envFrom:
+    - secret: {{userKeySecret}}
+  {{/if}}
+  # The app's own token, for PDL. Texas hands it out.
+  azure:
+    application:
+      enabled: true
+  # The login proxy turns a logged-in user's session cookie into a token on the request. It lets a request without
+  # a session through as it is, which is how the app knows that nobody is logged in.
+  idporten:
+    enabled: true
+    sidecar:
+      enabled: true
+      level: Level3
+  accessPolicy:
+    inbound:
+      rules:
+        - application: "*"
+          namespace: personbruker
+        - application: "*"
+          namespace: navno
+    outbound:
+      external:
+        - host: {{pdlHost}}
+  replicas:
+  {{#with replicas}}
+    min: {{min}}
+    max: {{max}}
+    scalingStrategy:
+      cpu:
+        thresholdPercentage: {{cpuThresholdPercentage}}
+  {{/with}}
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: {{cpu}}
+      memory: 128Mi

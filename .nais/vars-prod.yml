@@ -1,0 +1,13 @@
+# Dekoratøren calls the app inside the cluster, not through this. It is here because Nais won't deploy the login
+# proxy without an ingress. Its path has to be the app's own (OWN_PATH in server/app.ts).
+ingresses:
+  - https://www.nav.no/navno/nav-dekoratoren-auth
+pdlHost: pdl-api.prod-fss-pub.nais.io
+pdlTokenTarget: api://prod-fss.pdl.pdl-api/.default
+# Turns /identity on. It needs the Nais secret it names to exist first, with USER_KEY_SECRET in it:
+# userKeySecret: nav-dekoratoren-auth
+cpu: 200m
+replicas:
+  min: 2
+  max: 8
+  cpuThresholdPercentage: 60
