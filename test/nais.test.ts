@@ -42,6 +42,13 @@ describe.each(['vars-dev.yml', 'vars-prod.yml'])('%s', (file) => {
 		expect(ingresses.map((ingress) => ingress.pathname)).toEqual([OWN_PATH]);
 	});
 
+	// Nobody outside the cluster needs the app, so its ingress is on a domain only naisdevice reaches
+	test('is not on the internet', () => {
+		const internal = file === 'vars-dev.yml' ? '.intern.dev.nav.no' : '.intern.nav.no';
+
+		expect(ingresses.every((ingress) => ingress.hostname.endsWith(internal))).toBe(true);
+	});
+
 	test('asks Texas for a token to the PDL it calls', () => {
 		const cluster = variable('pdlHost').match(/^pdl-api\.((?:dev|prod)-fss)-pub\.nais\.io$/)?.[1];
 
