@@ -165,18 +165,18 @@ describe('the name of a logged-in user', () => {
 	});
 });
 
-// nav-dekoratoren-api answered with the fødselsnummer as the name, and kept that for half an hour
+// As nav-dekoratoren-api, /auth answers with the fødselsnummer as the name. Unlike it, that isn't kept for half an hour.
 describe('when PDL has no name to give', () => {
 	test.each([
 		['fails', { status: 500 }, 'failed'],
 		['does not know the user', { json: pdlNoPerson() }, 'missing'],
-	] as const)('and %s, the name is empty and PDL is asked again next time', async (_, reply, source) => {
+	] as const)('and %s, the name is the fødselsnummer and PDL is asked again next time', async (_, reply, source) => {
 		everyTokenIsItsOwner();
 		http.post(PDL_GRAPHQL_URL, [reply, reply, { json: pdlPerson(navn('Kari', null, 'Hansen')) }]);
 		const app = await startApp();
 
-		expect(await nameOf(app, '10000000001')).toBe('');
-		expect(await nameOf(app, '10000000001')).toBe('');
+		expect(await nameOf(app, '10000000001')).toBe('10000000001');
+		expect(await nameOf(app, '10000000001')).toBe('10000000001');
 		expect(await nameOf(app, '10000000001')).toBe('Kari Hansen');
 		expect(await nameOf(app, '10000000001')).toBe('Kari Hansen');
 
@@ -194,7 +194,7 @@ describe('when PDL has no name to give', () => {
 		const together = await Promise.all(Array.from({ length: 3 }, () => nameOf(app, '10000000001')));
 		const after = await nameOf(app, '10000000001');
 
-		expect(together).toEqual(['', '', '']);
+		expect(together).toEqual(['10000000001', '10000000001', '10000000001']);
 		expect(after).toBe('Kari Hansen');
 		expect(askedOfPdl()).toEqual(['10000000001', '10000000001']);
 	});
@@ -215,6 +215,6 @@ describe('when PDL has no name to give', () => {
 		expect(await nameOf(app, '10000000002')).toBe('Ola Olsen');
 
 		// The stuck one is given up on after the lookup's deadline
-		expect(await stuck).toBe('');
+		expect(await stuck).toBe('10000000001');
 	});
 });

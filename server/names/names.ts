@@ -22,7 +22,12 @@ const names: LRUCache<string, string> = new LRUCache<string, string>({
 	},
 });
 
-export const nameOf = async (ident: string): Promise<string> => {
+/**
+ * The name of the person with the fødselsnummer `ident`, or `fallback` when PDL has no name to give (an error, a
+ * timeout or an unknown person). The fallback is never cached: the next request asks PDL again. A name PDL has with
+ * every part missing is found, and empty, not the fallback.
+ */
+export const nameOf = async (ident: string, fallback: string): Promise<string> => {
 	const status: LRUCache.Status<string, string> = {};
 	const name = await names.fetch(ident, { status });
 
@@ -35,5 +40,5 @@ export const nameOf = async (ident: string): Promise<string> => {
 		recordNameCacheEntries(names.size);
 	}
 
-	return name ?? '';
+	return name ?? fallback;
 };

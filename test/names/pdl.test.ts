@@ -182,7 +182,7 @@ describe('a lookup with no name to show for it', () => {
 		const warn = vi.spyOn(logger, 'warn');
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(warn).toHaveBeenCalledExactlyOnceWith('PDL has no name for the user');
 		expect(await app.metric('nav_dekoratoren_auth_names_total', { source: 'missing' })).toBe(1);
@@ -212,7 +212,7 @@ describe('a lookup with no name to show for it', () => {
 		const warn = vi.spyOn(logger, 'warn');
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(warn).toHaveBeenCalledExactlyOnceWith('PDL request failed', logged);
 		expect(await app.metric('nav_dekoratoren_auth_names_total', { source: 'failed' })).toBe(1);
@@ -225,7 +225,7 @@ describe('a lookup with no name to show for it', () => {
 		const warn = vi.spyOn(logger, 'warn');
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(warn).toHaveBeenCalledExactlyOnceWith('PDL request failed', {
 			issues: [expect.stringContaining('data.person.navn')],
@@ -252,7 +252,7 @@ describe('a lookup with no name to show for it', () => {
 		http.post(PDL_GRAPHQL_URL, { hang: true });
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(
 			await app.metric('nav_dekoratoren_auth_upstream_requests_total', { upstream: 'pdl', status: 'timeout' })
@@ -265,7 +265,7 @@ describe('a lookup with no name to show for it', () => {
 		const warn = vi.spyOn(logger, 'warn');
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(http.callsTo(PDL_GRAPHQL_URL)).toEqual([]);
 		expect(warn).toHaveBeenCalledExactlyOnceWith('Token request for PDL failed', { status: 500 });
@@ -346,7 +346,7 @@ describe('a token PDL refuses', () => {
 		http.post(PDL_GRAPHQL_URL, { status: 401 });
 		const app = await startApp();
 
-		expect(await nameOf(app)).toBe('');
+		expect(await nameOf(app)).toBe(IDENT);
 
 		expect(http.callsTo(PDL_GRAPHQL_URL)).toHaveLength(2);
 	});
