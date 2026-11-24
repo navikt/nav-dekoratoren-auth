@@ -5,8 +5,7 @@ ingresses:
   - https://nav-dekoratoren-auth.intern.dev.nav.no/navno/nav-dekoratoren-auth
 pdlHost: pdl-api.dev-fss-pub.nais.io
 pdlTokenTarget: api://dev-fss.pdl.pdl-api/.default
-# Turns /identity on. It needs the Nais secret it names to exist first, with USER_KEY_SECRET in it:
-# userKeySecret: nav-dekoratoren-auth
+userKeySecret: nav-dekoratoren-auth
 cpu: 50m
 replicas:
   min: 1
