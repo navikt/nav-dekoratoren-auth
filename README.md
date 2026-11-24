@@ -49,7 +49,8 @@ The names are kept in memory in each pod, in an [lru-cache](https://github.com/i
   (`NAME_CACHE_MAX_ENTRIES`, measured at about 21 MB). When it is full, the name that was used longest ago goes.
 - When several requests for the same user arrive at once, they wait for one and the same lookup.
 - A lookup gets 2 seconds, including the token for PDL and a second try if there is one.
-- When PDL has no name to give (an error, a timeout or an unknown person), the name is empty, and nothing is cached.
+- When PDL has no name to give (an error, a timeout or an unknown person), `/auth` has the fødselsnummer as the name,
+  as nav-dekoratoren-api had, and `/identity` an empty name. Unlike nav-dekoratoren-api, nothing is cached.
   The next request asks PDL again. During a PDL outage that means one call to PDL for every request from a logged-in
   user whose name the pod doesn't have.
 - Nothing blocks: a slow PDL holds up those who are waiting for PDL, and nobody else. A cache hit waits for nothing.

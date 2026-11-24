@@ -37,7 +37,8 @@ export const compat = new Hono()
 
 		return c.json({
 			authenticated: true,
-			name: await nameOf(user.ident),
+			// As nav-dekoratoren-api did: the fødselsnummer is the name when PDL has none
+			name: await nameOf(user.ident, user.ident),
 			securityLevel: String(user.level),
 			userId: user.ident,
 		});
@@ -77,7 +78,8 @@ export const identity = (userKey: UserKey) =>
 
 			return c.json({
 				authenticated: true,
-				name: await nameOf(user.ident),
+				// Never the fødselsnummer, not even as a fallback
+				name: await nameOf(user.ident, ''),
 				securityLevel: String(user.level),
 				userKey: userKey(user.ident),
 			});

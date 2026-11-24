@@ -212,7 +212,7 @@ describe('/auth for a logged-in user', () => {
 		expect(await res.json()).toMatchObject({ authenticated: true, securityLevel });
 	});
 
-	test('is logged in without a name when PDL has none, and never with the fødselsnummer as the name', async () => {
+	test('has the fødselsnummer as the name when PDL has none, as nav-dekoratoren-api had', async () => {
 		texasSays(activeToken());
 		http.post(NAIS_TOKEN_ENDPOINT, { json: texasToken() });
 		http.post(PDL_GRAPHQL_URL, { status: 500 });
@@ -221,7 +221,7 @@ describe('/auth for a logged-in user', () => {
 		const res = await app.loggedIn(AUTH);
 
 		expect(res.status).toBe(200);
-		expect(await res.json()).toEqual({ authenticated: true, name: '', securityLevel: '4', userId: IDENT });
+		expect(await res.json()).toEqual({ authenticated: true, name: IDENT, securityLevel: '4', userId: IDENT });
 	});
 });
 
@@ -330,7 +330,7 @@ describe('/identity for a logged-in user', () => {
 		expect(await res.json()).toMatchObject({ authenticated: true, securityLevel });
 	});
 
-	test('is logged in without a name when PDL has none', async () => {
+	test('is logged in without a name when PDL has none, and never with the fødselsnummer as the name', async () => {
 		texasSays(activeToken());
 		http.post(NAIS_TOKEN_ENDPOINT, { json: texasToken() });
 		http.post(PDL_GRAPHQL_URL, { status: 500 });
@@ -344,6 +344,18 @@ describe('/identity for a logged-in user', () => {
 			securityLevel: '4',
 			userKey: 'pvfCn3ybGT9VMf5w3CqfDm',
 		});
+	});
+
+	test('does not get the fødselsnummer /auth fell back to', async () => {
+		texasSays(activeToken());
+		http.post(NAIS_TOKEN_ENDPOINT, { json: texasToken() });
+		http.post(PDL_GRAPHQL_URL, { status: 500 });
+		const app = await startApp();
+
+		expect(await (await app.loggedIn(AUTH)).json()).toMatchObject({ name: IDENT });
+		const res = await app.loggedIn(IDENTITY);
+
+		expect(await res.json()).toMatchObject({ name: '' });
 	});
 
 	test('has the name /auth asked PDL for, without asking again', async () => {
