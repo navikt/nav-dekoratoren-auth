@@ -51,6 +51,11 @@ spec:
     sidecar:
       enabled: true
       level: Level3
+      # Every request passes through the login proxy, at about 3 ms of CPU each. Nais's default request is 20m.
+      # Only what is set here changes: memory and the limits keep Nais's defaults.
+      resources:
+        requests:
+          cpu: {{wonderwallCpu}}
   accessPolicy:
     inbound:
       rules:
@@ -74,4 +79,4 @@ spec:
       memory: 512Mi
     requests:
       cpu: {{cpu}}
-      memory: 128Mi
+      memory: 160Mi
