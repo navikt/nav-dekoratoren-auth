@@ -4,6 +4,8 @@ pdlHost: pdl-api.dev-fss-pub.nais.io
 pdlTokenTarget: api://dev-fss.pdl.pdl-api/.default
 userKeySecret: nav-dekoratoren-auth
 cpu: 50m
+# 20m is the default
+wonderwallCpu: 20m
 replicas:
   min: 1
   max: 2

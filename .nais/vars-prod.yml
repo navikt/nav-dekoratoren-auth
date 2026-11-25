@@ -4,6 +4,8 @@ pdlHost: pdl-api.prod-fss-pub.nais.io
 pdlTokenTarget: api://prod-fss.pdl.pdl-api/.default
 userKeySecret: nav-dekoratoren-auth
 cpu: 200m
+# Tuned up a bit, this pod is very busy
+wonderwallCpu: 40m
 replicas:
   min: 2
   max: 8
